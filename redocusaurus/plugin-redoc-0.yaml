@@ -1,0 +1,172 @@
+openapi: 3.0.3
+info:
+  title: Payment Orchestrator API
+  version: 1.0.0
+  description: Content will be automatically updated when this specification is updated.
+paths:
+  /api/v1/session:
+    post:
+      tags:
+        - S2S-Card
+      summary: Create a new session
+      parameters:
+        - in: header
+          name: content-type
+          required: true
+          schema:
+            type: string
+            example: application/json
+        - in: header
+          name: cookie
+          required: true
+          schema:
+            type: string
+            example: PHPSESSID=p49dvrcr0kdqp5hvoqevc12tur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchant_key:
+                  type: string
+                  example: 7879b6e4-f284-11ef-91ba-0242ac120005
+                operation:
+                  type: string
+                  example: purchase
+                methods:
+                  type: array
+                  items:
+                    type: string
+                    example: dl
+                parameters:
+                  type: object
+                  properties:
+                    dl:
+                      type: object
+                      properties:
+                        document_number:
+                          type: string
+                          example: '11934254096'
+                order:
+                  type: object
+                  properties:
+                    number:
+                      type: string
+                      example: order-1234
+                    amount:
+                      type: string
+                      example: '1.19'
+                    currency:
+                      type: string
+                      example: BRL
+                    description:
+                      type: string
+                      example: Important gift
+                cancel_url:
+                  type: string
+                  example: https://example.com/cancel
+                success_url:
+                  type: string
+                  example: https://example.com/success
+                customer:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: John Doe
+                    email:
+                      type: string
+                      example: test@email.com
+                billing_address:
+                  type: object
+                  properties:
+                    country:
+                      type: string
+                      example: BR
+                    state:
+                      type: string
+                      example: CA
+                    city:
+                      type: string
+                      example: Los Angeles
+                    address:
+                      type: string
+                      example: Moor Building 35274
+                    zip:
+                      type: string
+                      example: '123456'
+                    phone:
+                      type: string
+                      example: '347771112233'
+                hash:
+                  type: string
+                  example: f9913870ba7336a777c1fb034dc578735e021407
+      responses:
+        '200':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirect_url:
+                    type: string
+                    example: https://dev2-checkout.rafinita.com/auth/ZXlKMGVYQWl...
+  /api/v1/payment-status:
+    get:
+      tags:
+        - S2S-APM
+      summary: Check the payment status
+      parameters:
+        - in: query
+          name: order_number
+          required: true
+          schema:
+            type: string
+            example: order-1234
+      responses:
+        '200':
+          description: Payment status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: paid
+                  order_number:
+                    type: string
+                    example: order-1234
+  /api/v1/cancel:
+    post:
+      tags:
+        - S2S-APM
+      summary: Cancel a payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_number:
+                  type: string
+                  example: order-1234
+                reason:
+                  type: string
+                  example: Customer requested cancellation
+      responses:
+        '200':
+          description: Payment canceled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+components: {}
